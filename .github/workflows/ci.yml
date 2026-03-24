@@ -83,7 +83,7 @@ jobs:
           languages: csharp
 
       - name: Second Build for CodeQL
-        run:  dotnet build --no-restore
+        run:  dotnet build
 
       - name: CodeQL analysis
         uses: github/codeql-action/analyze@v3
