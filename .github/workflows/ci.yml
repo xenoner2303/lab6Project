@@ -81,8 +81,10 @@ jobs:
         with:
           languages: csharp
 
-      - name: Second build for CodeQL
-        run: dotnet build
+      - name: Second Build for CodeQL
+        run: |
+          dotnet clean
+          dotnet build --no-incremental
 
       - name: CodeQL analysis
         uses: github/codeql-action/analyze@v3
