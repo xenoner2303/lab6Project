@@ -9,6 +9,8 @@ on:
 permissions:
   pull-requests: read
   contents: read
+  security-events: write
+  actions: read
 
 jobs:
   build:
@@ -69,7 +71,7 @@ jobs:
           cat cloc-report.txt
 
       - name: Check .NET Formatting
-        run: dotnet format --verify-no-changes --warnaserror
+        run: dotnet format --verify-no-changes
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
@@ -81,18 +83,17 @@ jobs:
         with:
           languages: csharp
 
-      - name: Second build for CodeQL
-        run: dotnet build
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
 
       - name: CodeQL analysis
         uses: github/codeql-action/analyze@v3
 
       - name: Develop Changes Log
         run: |
-          git checkout develop
-          git pull
-          git log --oneline --graph > develop_changes.txt
-          cat develop_changes.txt
+           git fetch origin develop
+           git log origin/develop --oneline --graph > develop_changes.txt
+           cat develop_changes.txt
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

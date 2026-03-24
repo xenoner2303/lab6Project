@@ -1,5 +1,5 @@
 ﻿using Xunit;
-using MyProject;
+using lab6Project;
 
 namespace lab6Project.tests;
 
@@ -61,6 +61,17 @@ public class CalculatorTests
     {
         var calc = new Calculator();
         var result = calc.GetMax(a, b);
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData(10, 55, 10)] // для a < b
+    [InlineData(34, 8, 8)] // для b < a
+    [InlineData(7, 7, 7)] // для a == b
+    public void GetMax_ShouldReturnLessrInt(int a, int b, int expected)
+    {
+        var calc = new Calculator();
+        var result = calc.GetMin(a, b);
         Assert.Equal(expected, result);
     }
 }

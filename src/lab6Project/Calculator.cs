@@ -29,4 +29,9 @@ public class Calculator
     {
         return a > b ? a : b;
     }
+
+    public int GetMin(int a, int b)
+    {
+        return a < b ? a : b;
+    }
 }
