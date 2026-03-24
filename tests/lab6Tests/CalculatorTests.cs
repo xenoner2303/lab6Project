@@ -1,5 +1,4 @@
 ﻿using Xunit;
-using MyProject;
 
 namespace lab6Project.tests;
 
