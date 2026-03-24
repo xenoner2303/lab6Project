@@ -91,10 +91,9 @@ jobs:
 
       - name: Develop Changes Log
         run: |
-          git checkout develop
-          git pull
-          git log --oneline --graph > develop_changes.txt
-          cat develop_changes.txt
+           git fetch origin develop
+           git log origin/develop --oneline --graph > develop_changes.txt
+           cat develop_changes.txt
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
