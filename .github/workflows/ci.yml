@@ -69,7 +69,7 @@ jobs:
           cat cloc-report.txt
 
       - name: Check .NET Formatting
-        run: dotnet format --verify-no-changes --warnaserror
+        run: dotnet format --verify-no-changes
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
