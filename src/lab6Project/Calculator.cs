@@ -24,4 +24,9 @@ public class Calculator
 
         return a / b;
     }
+
+    public int GetMax(int a, int b)
+    {
+        return a > b ? a : b;
+    }
 }
