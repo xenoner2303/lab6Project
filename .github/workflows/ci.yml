@@ -7,7 +7,7 @@ on:
       - develop
 
 permissions:
-  pull-requests: read
+  pull-requests: write
   contents: read
 
 jobs:
@@ -31,3 +31,74 @@ jobs:
 
       - name: Test
         run: dotnet test --no-build
+
+  analysis:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Code Review Check for develop
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number; 
+            const {data: reviews} = await github.rest.pulls.listReviews({ 
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+            
+            console.log(`Знайдено рев'ю: ${reviews.length}`);
+            reviews.forEach(r => console.log(`Автор: ${r.user.login}, статус: ${r.state}`));
+
+            const fs = require('fs');
+            fs.writeFileSync('reviews.json', JSON.stringify(reviews, null, 2));
+
+            const approved = reviews.some(review => review.state === 'APPROVED');
+            if (!approved) {
+              core.setFailed("Код-рев’ю не схвалено");
+            }
+
+      - name: Count lines of code with Cloc
+        run: |
+          sudo apt-get install -y cloc
+          cloc src/ > cloc-report.txt
+          cat cloc-report.txt
+
+      - name: Check .NET Formatting
+        run: dotnet format --verify-no-changes --warnaserror
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+
+      - name: Second build for CodeQL
+        run: dotnet build
+
+      - name: CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+
+      - name: Develop Changes Log
+        run: |
+          git checkout develop
+          git pull
+          git log --oneline --graph > develop_changes.txt
+          cat develop_changes.txt
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: reports
+          path: |
+             cloc-report.txt
+             develop_changes.txt
+             reviews.json
