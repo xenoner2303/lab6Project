@@ -9,6 +9,7 @@ on:
 permissions:
   pull-requests: read
   contents: read
+  security-events: write
 
 jobs:
   build:
@@ -82,9 +83,7 @@ jobs:
           languages: csharp
 
       - name: Second Build for CodeQL
-        run: |
-          dotnet clean
-          dotnet build --no-incremental
+        run:  dotnet build --no-restore
 
       - name: CodeQL analysis
         uses: github/codeql-action/analyze@v3
