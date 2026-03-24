@@ -52,4 +52,15 @@ public class CalculatorTests
 
         Assert.Throws<ArgumentException>(() => calc.Divide(10, 0));
     }
+
+    [Theory]
+    [InlineData(10, 5, 10)] // для a > b
+    [InlineData(3, 8, 8)] // для b > a
+    [InlineData(7, 7, 7)] // для a == b
+    public void GetMax_ShouldReturnGreaterInt(int a, int b, int expected)
+    {
+        var calc = new Calculator();
+        var result = calc.GetMax(a, b);
+        Assert.Equal(expected, result);
+    }
 }
