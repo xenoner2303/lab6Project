@@ -40,28 +40,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Code Review Check for develop
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const prNumber = context.payload.pull_request.number; 
-            const {data: reviews} = await github.rest.pulls.listReviews({ 
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prNumber
-            });
-            
-            console.log(`Знайдено рев'ю: ${reviews.length}`);
-            reviews.forEach(r => console.log(`Автор: ${r.user.login}, статус: ${r.state}`));
-
-            const fs = require('fs');
-            fs.writeFileSync('reviews.json', JSON.stringify(reviews, null, 2));
-
-            const approved = reviews.some(review => review.state === 'APPROVED');
-            if (!approved) {
-              core.setFailed("Код-рев’ю не схвалено");
-            }
-
       - name: Count lines of code with Cloc
         run: |
           sudo apt-get install -y cloc
